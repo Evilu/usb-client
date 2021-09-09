@@ -1,34 +1,30 @@
-import React from 'react';
+import React,{useState, useEffect} from 'react';
 
 import './App.css';
-import Tree from '@naisutech/react-tree'
+import Tree, { NodeList } from '@naisutech/react-tree'
+import io from 'socket.io-client'
 
-const data = [
-    {
-        "id": 12345678,
-        "parentId": null,
-        "label": "My parent node",
-        "items": [
-            {
-                "id": 87654321,
-                "label": "My file",
-                "parentId": 12345678
-            }
-        ]
-    },
-    {
-        "id": 56789012,
-        "parentId": 12345678,
-        "label": "My child node"
-    }
-]
+
+const socket = io('http://localhost:3000', { transports: ['websocket', 'polling', 'flashsocket'] });
+
+
+
+
 
     function App() {
+        let data: { id: number, parentId: any, label:string }[] = [];
+        useEffect(()=> {
+            socket.on('tree', (tree)=>{
+                    data.length = 0;
+                    data.push(...tree)
+            }
+            );
+        });
   return (
     <div className="App">
       <header className="App-header">
 
-        <Tree nodes={data}  />
+        <Tree nodes={data} />
       </header>
     </div>
   );
