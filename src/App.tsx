@@ -1,34 +1,37 @@
-import React,{useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 
 import './App.css';
-import Tree, { NodeList } from '@naisutech/react-tree'
+import Tree, {NodeList} from '@naisutech/react-tree'
 import io from 'socket.io-client'
 
 
-const socket = io('http://localhost:3005', { transports: ['websocket', 'polling', 'flashsocket'] });
+const socket = io('http://localhost:3005', {transports: ['websocket', 'polling', 'flashsocket']});
 
 
+function App() {
+    const [masterData, setMasterData] = useState([]);
+    const [data, setData] = useState([]);
 
-
-
-    function App() {
-        const [data, setData] = useState([]);
-
-        useEffect(()=> {
-            socket.on('tree', (tree)=>{
-                    setData(tree)
-
-            }
-            );
+    useEffect(() => {
+        socket.on('tree', (tree) => {
+            setMasterData(tree)
+            setData(masterData)
         });
-  return (
-    <div className="App">
-      <header className="App-header">
-        <Tree nodes={data} />
-      </header>
+    });
 
-    </div>
-  );
+
+    return (
+        <div className="App">
+            <div className="App-header">
+      <div className="">
+          <button onClick={() => setData(masterData.filter(item => item["bDeviceClass"] === 9))}>Show Only Hubs</button>
+          <button onClick={() => setData(masterData)}>Show All</button>
+      </div>
+                <Tree nodes={data}/>
+            </div>
+
+        </div>
+    );
 }
 
 export default App;
